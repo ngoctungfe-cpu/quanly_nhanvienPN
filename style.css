@@ -1,0 +1,351 @@
+:root {
+    --primary-color: #7c3aed;
+    --primary-strong: #5b21b6;
+    --accent-color: #ff174f;
+    --border-color: #dbe2ea;
+    --row-height: 50px;
+    --surface: rgba(255, 255, 255, 0.86);
+}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 12px;
+    background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.14), transparent 24%),
+        radial-gradient(circle at top right, rgba(255, 23, 79, 0.09), transparent 20%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2ff 46%, #fdf2f8 100%);
+    color: #0f172a;
+}
+
+.hero-banner {
+    max-width: 1280px;
+    margin: 0 auto 14px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(255,255,255,0.94), rgba(255,255,255,0.76));
+    border: 1px solid rgba(124, 58, 237, 0.12);
+    border-radius: 24px;
+    box-shadow: 0 22px 50px -32px rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-banner::after {
+    content: '';
+    position: absolute;
+    inset: auto -40px -80px auto;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 23, 79, 0.16), transparent 70%);
+    pointer-events: none;
+}
+
+.brand-logo {
+    width: 92px;
+    height: 116px;
+    flex: 0 0 auto;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 18px rgba(255, 23, 79, 0.16));
+}
+
+.hero-copy {
+    min-width: 0;
+}
+
+.eyebrow {
+    margin: 0 0 6px;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    font-weight: 800;
+}
+
+h1 {
+    text-align: left;
+    color: #0f172a;
+    margin: 0 0 6px;
+    line-height: 1.05;
+    font-size: clamp(1.55rem, 2.2vw, 2.2rem);
+}
+
+p.subtitle {
+    text-align: left;
+    color: #475569;
+    margin: 0;
+    max-width: 56ch;
+    line-height: 1.45;
+}
+
+/* Form control */
+.form-container {
+    max-width: 1280px;
+    margin: 0 auto 14px;
+    background: var(--surface);
+    padding: 14px;
+    border-radius: 18px;
+    box-shadow: 0 16px 34px -30px rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: end;
+    backdrop-filter: blur(10px);
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+label {
+    font-weight: 700;
+    font-size: 13px;
+    color: #334155;
+}
+select, input, button {
+    padding: 11px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 14px;
+    outline: none;
+}
+select, input {
+    background: rgba(255,255,255,0.96);
+    min-height: 44px;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+select:focus, input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+button {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-strong));
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.2s;
+    box-shadow: 0 10px 18px -14px rgba(91, 33, 182, 0.65);
+}
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 22px -16px rgba(91, 33, 182, 0.72);
+}
+button:active {
+    transform: translateY(0);
+}
+button.btn-clear {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+}
+button.btn-clear:hover {
+    box-shadow: 0 14px 22px -16px rgba(185, 28, 28, 0.64);
+}
+
+/* Schedule Grid Layout */
+.scheduler-wrapper {
+    max-width: 1280px;
+    margin: 0 auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background: rgba(255,255,255,0.9);
+    border-radius: 22px;
+    box-shadow: 0 22px 46px -34px rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+}
+.scheduler-grid {
+    display: grid;
+    grid-template-columns: 72px repeat(10, minmax(104px, 1fr));
+    position: relative;
+}
+
+/* Cell Styles */
+.grid-header {
+    background: linear-gradient(180deg, #f8fafc, #eef2ff);
+    padding: 8px 6px;
+    text-align: center;
+    font-weight: 800;
+    color: #1e293b;
+    border-bottom: 2px solid rgba(148, 163, 184, 0.25);
+    border-right: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    line-height: 1.15;
+    font-size: 10.5px;
+    min-height: 90px;
+}
+.time-cell {
+    padding-right: 10px;
+    text-align: right;
+    font-weight: 700;
+    color: #475569;
+    font-size: 12px;
+    background: linear-gradient(180deg, #ffffff, #f8fafc);
+    border-right: 1px solid rgba(148, 163, 184, 0.25);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    height: var(--row-height);
+    line-height: var(--row-height);
+}
+.slot-cell {
+    border-right: 1px solid rgba(241, 245, 249, 0.95);
+    border-bottom: 1px solid rgba(241, 245, 249, 0.95);
+    height: var(--row-height);
+    position: relative;
+    background: rgba(255,255,255,0.72);
+}
+.slot-cell:nth-child(11n) {
+    border-right: 1px solid var(--border-color);
+}
+.grid-row-line {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.18) !important;
+}
+
+/* Booking Event Block */
+.event-block {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    background: linear-gradient(180deg, #ffe4e6, #fecdd3);
+    border-left: 5px solid var(--accent-color);
+    color: #881337;
+    padding: 8px 10px;
+    font-size: 12px;
+    border-radius: 12px;
+    box-shadow: 0 10px 18px -14px rgba(190, 18, 60, 0.55);
+    z-index: 2;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.event-block .time-label {
+    font-weight: 800;
+    font-size: 11px;
+    margin-bottom: 3px;
+    color: #9f1239;
+}
+.event-block .delete-btn {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    cursor: pointer;
+    color: #b91c1c;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.event-block strong {
+    font-size: 12px;
+}
+
+@media (max-width: 720px) {
+    body {
+        padding: 14px;
+    }
+
+    .hero-banner {
+        padding: 18px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .brand-logo {
+        width: 86px;
+        height: 108px;
+    }
+
+    h1,
+    p.subtitle {
+        text-align: left;
+    }
+
+    .form-container {
+        padding: 12px;
+    }
+
+    .form-group,
+    .form-group input,
+    .form-group select,
+    .form-container button {
+        width: 100%;
+    }
+
+    .form-container {
+        gap: 10px;
+    }
+
+    .form-group {
+        min-width: 0;
+    }
+
+    .form-container button {
+        justify-content: center;
+    }
+
+    .scheduler-grid {
+        grid-template-columns: 58px repeat(10, minmax(92px, 1fr));
+        min-width: 990px;
+    }
+
+    .scheduler-wrapper {
+        width: 100%;
+        border-radius: 16px;
+    }
+
+    .grid-header {
+        font-size: 9px;
+        padding: 8px 3px;
+        min-height: 72px;
+    }
+
+    .time-cell {
+        font-size: 10px;
+        padding-right: 6px;
+    }
+
+    .event-block {
+        left: 4px;
+        right: 4px;
+        font-size: 11px;
+        padding: 7px 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-banner {
+        padding: 14px;
+    }
+
+    .brand-logo {
+        width: 74px;
+        height: 92px;
+    }
+
+    h1 {
+        font-size: 1.35rem;
+    }
+
+    p.subtitle {
+        font-size: 13px;
+    }
+
+    .scheduler-grid {
+        min-width: 930px;
+        grid-template-columns: 54px repeat(10, minmax(86px, 1fr));
+    }
+
+    .grid-header {
+        min-height: 68px;
+    }
+}

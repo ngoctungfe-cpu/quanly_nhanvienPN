@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Điều Phối Lịch Nhân Viên</title>
+    <link rel="icon" type="image/svg+xml" href="logo-phung-nong.svg">
+    <link rel="shortcut icon" href="logo-phung-nong.svg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="hero-banner">
+        <img class="brand-logo" src="logo-phung-nong.svg" alt="Logo Phùng Nồng">
+        <div class="hero-copy">
+            <p class="eyebrow">PHÙNG NỒNG</p>
+            <h1>BẢNG ĐIỀU PHỐI LỊCH NHÂN VIÊN</h1>
+            <p class="subtitle">Ứng dụng nội bộ ghi nhớ trạng thái bận/rảnh nội bộ của nhân viên</p>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <div class="form-group">
+            <label for="employeeSelect">Chọn Nhân Viên:</label>
+            <select id="employeeSelect"></select>
+        </div>
+        <div class="form-group">
+            <label for="startTime">Từ (Giờ):</label>
+            <select id="startTime"></select>
+        </div>
+        <div class="form-group">
+            <label for="endTime">Đến (Giờ):</label>
+            <select id="endTime"></select>
+        </div>
+        <div class="form-group">
+            <label for="noteInput">Ghi chú (Tên khách / việc bận):</label>
+            <input type="text" id="noteInput" placeholder="Ví dụ: Làm nail cho chị Vy" style="width: 250px;">
+        </div>
+        <button onclick="addBooking()">Đánh Dấu BẬN</button>
+        <button class="btn-clear" onclick="clearAllBookings()">Xóa Toàn Bộ Lịch</button>
+    </div>
+
+    <div class="scheduler-wrapper">
+        <div class="scheduler-grid" id="schedulerGrid">
+            </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
