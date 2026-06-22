@@ -3,9 +3,80 @@ const EMPLOYEES = ["Lê Thị Thùy Trâm", "Phạm Thị Ngọc Hà", "Đặng 
 const START_HOUR = 7; 
 const END_HOUR = 21;  
 const ROW_HEIGHT = 50; 
+const LOCAL_STORAGE_KEY = 'staff_bookings';
+const CLOUD_COLLECTION = 'staff_bookings';
 
-// Lấy dữ liệu cũ từ LocalStorage
-let bookings = JSON.parse(localStorage.getItem('staff_bookings')) || [];
+let bookings = [];
+let useCloudSync = false;
+let db = null;
+let bookingsCollection = null;
+let hasInitialCloudSync = false;
+
+function setSyncStatus(message) {
+    const syncStatus = document.getElementById('syncStatus');
+    if (syncStatus) {
+        syncStatus.textContent = message;
+    }
+}
+
+function loadLocalBookings() {
+    return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
+}
+
+function saveLocalBookings() {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(bookings));
+}
+
+function sortBookings(list) {
+    return list.slice().sort((left, right) => {
+        if (left.start !== right.start) return left.start - right.start;
+        if (left.employee !== right.employee) return left.employee.localeCompare(right.employee, 'vi');
+        return (left.note || '').localeCompare(right.note || '', 'vi');
+    });
+}
+
+async function initCloudSync() {
+    const firebaseConfig = window.FIREBASE_CONFIG;
+    if (!firebaseConfig || !firebaseConfig.projectId || !window.firebase) {
+        bookings = sortBookings(loadLocalBookings());
+        setSyncStatus('Đang dùng lưu cục bộ trên trình duyệt');
+        renderGrid();
+        return;
+    }
+
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        db = firebase.firestore();
+        bookingsCollection = db.collection(CLOUD_COLLECTION);
+        useCloudSync = true;
+        setSyncStatus('Đang đồng bộ chung cho nhiều người dùng');
+
+        bookingsCollection.onSnapshot((snapshot) => {
+            bookings = sortBookings(snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data()
+            })));
+            hasInitialCloudSync = true;
+            renderGrid();
+            setSyncStatus('Đang đồng bộ chung cho nhiều người dùng');
+        }, (error) => {
+            console.error('Cloud sync error', error);
+            useCloudSync = false;
+            bookings = sortBookings(loadLocalBookings());
+            setSyncStatus('Đồng bộ thất bại, đang dùng lưu cục bộ');
+            renderGrid();
+        });
+    } catch (error) {
+        console.error('Init cloud sync error', error);
+        useCloudSync = false;
+        bookings = sortBookings(loadLocalBookings());
+        setSyncStatus('Đồng bộ chưa bật, đang dùng lưu cục bộ');
+        renderGrid();
+    }
+}
 
 // 1. Khởi tạo dữ liệu cho các ô Chọn nhân viên và giờ giấc
 function initForm() {
@@ -63,6 +134,7 @@ function renderEvents() {
         eventEl.style.top = `${topPosition}px`;
         eventEl.style.gridColumn = `${empColIndex + 2}`; 
         eventEl.style.height = `${heightPosition}px`;
+        eventEl.dataset.bookingId = booking.id || '';
 
         eventEl.innerHTML = `
             <div>
@@ -98,8 +170,25 @@ function addBooking() {
         return;
     }
 
-    bookings.push({ employee, start, end, note });
-    localStorage.setItem('staff_bookings', JSON.stringify(bookings));
+    const newBooking = { employee, start, end, note, createdAt: Date.now() };
+
+    if (useCloudSync && bookingsCollection) {
+        bookingsCollection.add(newBooking).then(() => {
+            document.getElementById('noteInput').value = '';
+        }).catch((error) => {
+            console.error('Add cloud booking failed', error);
+            bookings.push({ ...newBooking, id: `local-${Date.now()}` });
+            bookings = sortBookings(bookings);
+            saveLocalBookings();
+            document.getElementById('noteInput').value = '';
+            renderGrid();
+        });
+        return;
+    }
+
+    bookings.push({ ...newBooking, id: `local-${Date.now()}` });
+    bookings = sortBookings(bookings);
+    saveLocalBookings();
 
     document.getElementById('noteInput').value = '';
     renderGrid();
@@ -108,8 +197,17 @@ function addBooking() {
 // 5. Xóa 1 lịch cụ thể
 function deleteBooking(index) {
     if(confirm("Bạn muốn xóa ghi chú bận này?")) {
+        const booking = bookings[index];
+
+        if (useCloudSync && bookingsCollection && booking && booking.id) {
+            bookingsCollection.doc(booking.id).delete().catch((error) => {
+                console.error('Delete cloud booking failed', error);
+            });
+            return;
+        }
+
         bookings.splice(index, 1);
-        localStorage.setItem('staff_bookings', JSON.stringify(bookings));
+        saveLocalBookings();
         renderGrid();
     }
 }
@@ -117,6 +215,17 @@ function deleteBooking(index) {
 // 6. Xóa sạch lịch
 function clearAllBookings() {
     if (confirm("Bạn có chắc chắn muốn xóa TOÀN BỘ lịch ghi nhớ không?")) {
+        if (useCloudSync && bookingsCollection) {
+            bookingsCollection.get().then((snapshot) => {
+                const batch = db.batch();
+                snapshot.forEach((doc) => batch.delete(doc.ref));
+                return batch.commit();
+            }).catch((error) => {
+                console.error('Clear cloud bookings failed', error);
+            });
+            return;
+        }
+
         bookings = [];
         localStorage.removeItem('staff_bookings');
         renderGrid();
@@ -125,4 +234,4 @@ function clearAllBookings() {
 
 // Chạy ứng dụng khi load trang
 initForm();
-renderGrid();
+initCloudSync();
